@@ -1,0 +1,419 @@
+/* Сброс стилей и базовые настройки */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
+
+/* Основной контент */
+.main {
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Карусель с тюленями */
+.seals-carousel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 1200px;
+}
+
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    min-height: 500px;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Карточки тюленей */
+.seal-card {
+    min-width: 100%;
+    display: flex;
+    gap: 3rem;
+    padding: 2rem;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 500px;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.seal-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    position: relative;
+}
+
+.card-image {
+    flex: 0 0 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seal-avatar {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.seal-avatar:hover {
+    transform: scale(1.05);
+}
+
+.seal-avatar.yo-chan {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.yo-chan .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.tsuki-chan {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.tsuki-chan .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.katsunori-kun {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.katsunori-kun .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.mashiro-kun {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.mashiro-kun .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.seal-5 {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.seal-5 .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.seal-6 {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.seal-6 .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.seal-avatar.seal-7 {
+    background: transparent;
+    overflow: hidden;
+}
+
+.seal-avatar.seal-7 .seal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.seal-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.seal-species {
+    font-size: 1.1rem;
+    color: #718096;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.seal-info {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #667eea;
+}
+
+.seal-info p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.seal-info p:last-child {
+    margin-bottom: 0;
+}
+
+.seal-description {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #4a5568;
+}
+
+/* Навигация */
+.carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.nav-btn {
+    background: #667eea;
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.nav-btn:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+}
+
+.nav-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #667eea;
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background: #cbd5e0;
+}
+
+
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .seals-carousel {
+        padding: 2rem 1.5rem;
+    }
+    
+    .seal-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .card-image {
+        flex: none;
+    }
+    
+    .seal-avatar {
+        width: 200px;
+        height: 200px;
+        font-size: 6rem;
+    }
+    
+    .seal-name {
+        font-size: 2rem;
+    }
+    
+    .carousel-nav {
+        gap: 1rem;
+    }
+    
+    .nav-btn {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .seal-avatar {
+        width: 150px;
+        height: 150px;
+        font-size: 4rem;
+    }
+    
+    .seal-name {
+        font-size: 1.5rem;
+    }
+    
+    .seal-info {
+        padding: 1rem;
+    }
+    
+    .nav-dots {
+        gap: 0.3rem;
+    }
+    
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.seal-card.active {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Дополнительные эффекты */
+.seal-avatar::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.seal-avatar:hover::after {
+    opacity: 1;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
