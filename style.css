@@ -740,3 +740,143 @@ body {
     opacity: 1 !important;
     transform: none !important;
 }
+@media (max-width: 768px) {
+    .seal-card {
+        flex-direction: column;
+        min-height: auto;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .card-image {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .seal-avatar {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+
+    .card-content {
+        width: 100%;
+    }
+
+    .seal-name {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .seal-species {
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .seal-info {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .seal-description {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .carousel-container {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .seal-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .seal-name {
+        font-size: 1.5rem;
+    }
+
+    .seal-info p {
+        font-size: 0.85rem;
+    }
+}
+@media (max-width: 768px) {
+    .gallery-item {
+        min-width: 100%;
+    }
+    
+    .gallery-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+/* Исправления для текста в карточках */
+.seal-description, .seal-info p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+/* Дополнительные исправления для мобильных */
+@media (max-width: 768px) {
+    .card-content {
+        padding: 0 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .seal-info {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    .seal-description {
+        word-break: break-word;
+        padding: 0 5px;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 400px) {
+    .seal-description {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .seal-info p {
+        font-size: 0.8rem;
+    }
+}
+.seal-card {
+    box-sizing: border-box;
+    max-width: 100vw;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+@media (max-width: 480px) {
+    .carousel-nav {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .nav-dots {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+}
+.seal-info, .seal-description {
+    word-break: break-word;
+}
+.problem-element {
+    max-width: 100%;
+    display: inline-block;
+}

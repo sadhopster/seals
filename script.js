@@ -147,7 +147,7 @@ function createSealsHTML(center) {
                                     ${seal.weight ? `<p><strong>Вес:</strong> ${seal.weight}</p>` : ''}
                                     ${seal.features ? `<p><strong>Особенности:</strong> ${seal.features}</p>` : ''}
                                 </div>
-                                <p class="seal-description">${seal.description}</p>
+                                <p class="seal-description" style="max-width: 100%; overflow: hidden; text-overflow: ellipsis;">${seal.description}</p>
                             </div>
                         </div>
                     `).join('')}
@@ -285,6 +285,17 @@ function initCarousel() {
             updateCarousel(newIndex);
         }
     });
+
+    function updateCardSizes() {
+        if (window.innerWidth <= 768) {
+            cards.forEach(card => {
+                card.style.minWidth = '100%';
+            });
+            track.style.width = '100%';
+        }
+    }
+    updateCardSizes();
+    window.addEventListener('resize', updateCardSizes);
 }
 
 function initGallery() {
