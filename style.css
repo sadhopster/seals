@@ -307,7 +307,7 @@ body {
 }
 
 .dot:hover {
-    background: #cbd5e0);
+    background: #cbd5e0;
 }
 
 .back-btn {
@@ -879,4 +879,503 @@ body {
 .problem-element {
     max-width: 100%;
     display: inline-block;
+}
+
+/* Стили для галереи тюленей */
+.seal-gallery {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .gallery-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .gallery-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #667eea;
+  }
+  
+  .gallery-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .gallery-photo {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .gallery-photo:hover {
+    transform: scale(1.03);
+  }
+  
+  .back-to-seals {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto 0;
+  }
+  
+  /* Адаптация для мобильных */
+  @media (max-width: 768px) {
+    .gallery-photos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .gallery-header {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  .sasha-gallery {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+    /* Убрали overflow-x: auto */
+}
+
+.gallery-grid {  /* Переименовываем .gallery-row в .gallery-grid */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.gallery-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    /* Убрали min-width и flex-shrink */
+}
+
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .gallery-item img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Стили для галереи Саши */
+.sasha-gallery {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.gallery-container {
+    display: flex;
+    flex-wrap: wrap; /* Перенос на новую строку */
+    gap: 20px;
+    justify-content: center; /* Центрирование карточек */
+    margin: 30px 0;
+}
+
+.gallery-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    width: 200px; /* Фиксированная ширина карточки */
+    cursor: pointer; /* Указатель при наведении */
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.gallery-item p {
+    font-size: 14px;
+    color: #4a5568;
+}
+
+/* Модальное окно */
+.photo-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    text-align: center;
+}
+
+.modal-photo {
+    max-height: 80vh;
+    max-width: 90vw;
+    border-radius: 8px;
+}
+
+.close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: white;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .gallery-item {
+        width: 150px;
+    }
+    
+    .gallery-item img {
+        height: 140px;
+    }
+}
+
+/* Стили для галереи фотографий тюленя */
+.seal-gallery {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.gallery-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    align-items: center;
+}
+
+.gallery-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #667eea;
+    
+}
+
+.seal-photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.seal-photo-item {
+    width: 200px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.seal-photo-item:hover {
+    transform: scale(1.05);
+}
+
+.seal-photo-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #f8fafc;
+}
+
+.back-to-seals {
+    display: block;
+    margin: 30px auto 0;
+    padding: 12px 25px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.back-to-seals:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .seal-photo-item {
+        width: 160px;
+    }
+    
+    .seal-photo-item img {
+        height: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .seal-photo-item {
+        width: 140px;
+    }
+    
+    .gallery-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Обновленные стили для шапки галереи */
+.gallery-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирование по горизонтали */
+    gap: 15px;
+    margin-bottom: 30px;
+    text-align: center; /* Центрирование текста */
+}
+
+.gallery-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #667eea;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-header h2 {
+    font-size: 24px;
+    color: #2d3748;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 480px) {
+    .gallery-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .gallery-header h2 {
+        font-size: 20px;
+    }
+}
+
+/* Дополнительные стили для лучшего отображения */
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.seal-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+.back-to-seals {
+    margin-top: 30px;
+    width: auto;
+    padding: 12px 30px;
+}
+
+/* Шапка галереи - аватар и имя в одной строке */
+.gallery-header {
+    display: flex;
+    align-items: center; /* Выравнивание по вертикали */
+    justify-content: center; /* Центрирование всей группы */
+    gap: 20px; /* Расстояние между аватаром и именем */
+    margin-bottom: 30px;
+    width: 100%;
+    flex-wrap: wrap; /* На случай очень узких экранов */
+}
+
+.gallery-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #667eea;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; /* Запрещаем уменьшение аватара */
+}
+
+.gallery-header h2 {
+    font-size: 24px;
+    color: #2d3748;
+    margin: 0;
+    font-weight: 600;
+    white-space: nowrap; /* Имя в одну строку */
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .gallery-header {
+        gap: 15px;
+    }
+    
+    .gallery-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .gallery-header h2 {
+        font-size: 20px;
+        white-space: normal; /* Разрешаем перенос на мобильных */
+    }
+}
+
+/* Общие стили для галерей (и тюленей, и Саши) */
+.seal-gallery {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.seal-photos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.seal-photo-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.seal-photo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.seal-photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.seal-photo-item p {
+    font-size: 14px;
+    color: #4a5568;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .seal-photos-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .seal-photo-item img {
+        height: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .seal-photos-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .seal-photo-item img {
+        height: 140px;
+    }
+}
+
+.seal-photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.seal-photo-item {
+    width: 200px; /* Фиксированная ширина карточки */
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.seal-photo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.seal-photo-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }

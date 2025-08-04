@@ -8,7 +8,12 @@ const centersData = {
             weight: '50-60 кг', 
             features: 'Любит гю и джампу-джампу', 
             description: 'Йо-чан - великолепно исполняет команды, в особенности "Гю" и "Джампу-джампу". Она немного ленивая, но когда дело доходит до рыпки, то ее сила равняется 100%.', 
-            photo: 'yo-chan.png' 
+            photo: 'yo-chan.png',
+            photos: [
+                'yo-chan1.jpg',
+                'yo-chan2.jpg',
+                'yo-chan3.jpg'
+            ]
         },
         { 
             id: 'tsuki-chan', 
@@ -18,7 +23,13 @@ const centersData = {
             weight: '17.5 кг', 
             features: 'Любит делать бу-бу', 
             description: 'Цуки - настоящая маленькая дьяволица! Она часто издает звуки бу-бу и драконит всех тюленей.', 
-            photo: 'tsuki-chan.png' 
+            photo: 'tsuki-chan.png',
+            photos: [
+                'tsuki1.jpg',
+                'tsuki2.jpg',
+                'tsuki3.jpg',
+                'tsuki4.jpg'
+            ]
         },
         { 
             id: 'katsunori-kun', 
@@ -28,7 +39,13 @@ const centersData = {
             weight: 'Нет данных', 
             features: 'Переигрывает, сердечко на лбу', 
             description: 'Кацунори - недооцененная нерпа, на самом деле он очень круто исполняет команды, особенно в паре с Йо.', 
-            photo: 'katsunori.png' 
+            photo: 'katsunori.png',
+            photos: [
+                'katsu1.jpg',
+                'katsu2.jpg',
+                'katsu3.jpg',
+                'katsu4.jpg'
+            ]
         },
         { 
             id: 'mashiro-kun', 
@@ -38,7 +55,13 @@ const centersData = {
             weight: 'Нет данных', 
             features: 'Боится контактировать с другими', 
             description: 'Маширо - очень умный, но пока очень боится контактировать с остальными тюленями.', 
-            photo: 'mashiro.png' 
+            photo: 'mashiro.png',
+            photos: [
+                'mahi1.jpg',
+                'mahi2.jpg',
+                'mahi3.jpg',
+                'mahi4.jpg'
+            ]
         },
         { 
             id: 'seal-6', 
@@ -48,7 +71,12 @@ const centersData = {
             weight: '', 
             features: 'Немного абьюзивные отношения', 
             description: 'Йо и Кацу очень любят друг друга, но Йо, как настоящая нерпа, считает себя главной в этой паре, поэтому ей можно не напрягаться с выполнением команд в паре с Кацу.', 
-            photo: 'couple.png' 
+            photo: 'couple.png',
+            photos: [
+                'couple1.jpg',
+                'couple2.jpg',
+                'couple3.jpg'
+            ]
         }
     ], 
     kamogawa: [
@@ -60,12 +88,18 @@ const centersData = {
             weight: 'Нет данных', 
             features: 'Злюка, старушка', 
             description: 'Ару всем всегда недовольна. Разбудили? Ару злится. Покормили? Ару злится. Рядом другой тюлень проплыл? Ару злится. Ару - злюка.', 
-            photo: 'aru.png' 
+            photo: 'aru.png',
+            photos: [
+                'aru1.jpg',
+                'aru2.jpg',
+                'aru3.jpg'
+            ]
         }
     ],
     sasha: [
         { photo: 'sasha1.png', description: 'Рисунок Йо-чан на судоку' },
-        { photo: 'sasha2.jpg', description: 'Рисунок Цуки и Йо' }
+        { photo: 'sasha2.jpg', description: 'Рисунок Цуки и Йо' },
+        { photo: 'sasha3.jpg', description: 'Батон' }
     ]
 };
 
@@ -79,9 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// В функции showSeals в script.js
-// Обновленная функция showSeals
 function showSeals(center) {
+    window.currentCenter = center;
     const centersCard = document.getElementById('centersCard');
     const sealsContainer = document.getElementById('sealsContainer');
     
@@ -89,34 +122,30 @@ function showSeals(center) {
     sealsContainer.innerHTML = createSealsHTML(center);
     sealsContainer.style.display = 'block';
     
-    document.querySelector('.back-btn')?.addEventListener('click', () => {
-        sealsContainer.style.display = 'none';
-        centersCard.style.display = 'block';
-    });
-    
     if (center === 'sasha') {
-        initGallery(); // Инициализируем галерею для Саши
+        initGallery();
     } else {
         initCarousel();
     }
 }
+
 function createSealsHTML(center) {
     const seals = centersData[center];
     if (center === 'sasha') {
         return `
-            <div class="sasha-gallery">
+            <div class="seal-gallery">
                 <h2 class="title">Творения Саши</h2>
-                <div class="gallery-row">
+                <div class="seal-photos-container">
                     ${seals.map(seal => `
-                        <div class="gallery-item" data-photo="${seal.photo}">
+                        <div class="seal-photo-item">
                             <img src="${seal.photo}" alt="${seal.description}">
                             <p>${seal.description}</p>
                         </div>
                     `).join('')}
                 </div>
-                <button class="back-btn">← Назад к центрам</button>
+                <button class="back-btn back-to-centers">← Назад к центрам</button>
                 
-                <!-- Модальное окно для увеличенного фото -->
+                <!-- Модальное окно -->
                 <div class="photo-modal" style="display:none">
                     <div class="modal-content">
                         <span class="close-modal">&times;</span>
@@ -147,7 +176,7 @@ function createSealsHTML(center) {
                                     ${seal.weight ? `<p><strong>Вес:</strong> ${seal.weight}</p>` : ''}
                                     ${seal.features ? `<p><strong>Особенности:</strong> ${seal.features}</p>` : ''}
                                 </div>
-                                <p class="seal-description" style="max-width: 100%; overflow: hidden; text-overflow: ellipsis;">${seal.description}</p>
+                                <p class="seal-description">${seal.description}</p>
                             </div>
                         </div>
                     `).join('')}
@@ -162,19 +191,19 @@ function createSealsHTML(center) {
                 </div>
                 <button class="nav-btn next-btn">→</button>
             </div>
-            <button class="back-btn">← Назад к центрам</button>
+            <button class="back-btn back-to-centers">← Назад к центрам</button>
         </div>
     `;
 }
 
 function initCarousel() {
-    const track = document.querySelector('.carousel-track');
+        const track = document.querySelector('.carousel-track');
     const cards = document.querySelectorAll('.seal-card');
     const dots = document.querySelectorAll('.dot');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     let currentIndex = 0;
-
+    initSealGalleries(); 
     // Устанавливаем начальную позицию
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
@@ -286,6 +315,12 @@ function initCarousel() {
         }
     });
 
+    document.querySelector('.back-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Предотвращаем всплытие события
+        document.getElementById('sealsContainer').style.display = 'none';
+        document.getElementById('centersCard').style.display = 'block';
+    });
+
     function updateCardSizes() {
         if (window.innerWidth <= 768) {
             cards.forEach(card => {
@@ -296,28 +331,113 @@ function initCarousel() {
     }
     updateCardSizes();
     window.addEventListener('resize', updateCardSizes);
+    
+    document.querySelector('.back-to-centers')?.addEventListener('click', () => {
+        document.getElementById('sealsContainer').style.display = 'none';
+        document.getElementById('centersCard').style.display = 'block';
+    });
 }
 
 function initGallery() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
     const modal = document.querySelector('.photo-modal');
-    const modalImg = document.querySelector('.modal-photo');
-    const modalDesc = document.querySelector('.modal-description');
-    const closeBtn = document.querySelector('.close-modal');
-
-    galleryItems.forEach(item => {
+    const modalImg = modal.querySelector('.modal-photo');
+    const modalDesc = modal.querySelector('.modal-description');
+    const closeBtn = modal.querySelector('.close-modal');
+    
+    // Обработчики для фотографий
+    document.querySelectorAll('.seal-photo-item').forEach(item => {
         item.addEventListener('click', () => {
-            const imgSrc = item.querySelector('img').src;
-            const description = item.querySelector('p').textContent;
+            const img = item.querySelector('img');
+            const desc = item.querySelector('p').textContent;
             
-            modalImg.src = imgSrc;
-            modalDesc.textContent = description;
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            modalDesc.textContent = desc;
             modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Блокируем прокрутку страницы
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    
+    // Закрытие модального окна
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Обработчик кнопки "Назад"
+    document.querySelector('.back-to-centers').addEventListener('click', () => {
+        document.getElementById('sealsContainer').style.display = 'none';
+        document.getElementById('centersCard').style.display = 'block';
+    });
+}
+
+function initSealGalleries() {
+    document.querySelectorAll('.seal-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const sealId = card.dataset.seal;
+            const center = window.currentCenter;
+            const seal = centersData[center].find(s => s.id === sealId);
+            
+            if (seal && seal.photos && seal.photos.length > 0) {
+                showSealGallery(seal);
+            }
+        });
+    });
+}
+
+function showSealGallery(seal) {
+    const galleryHTML = `
+        <div class="seal-gallery">
+            <div class="gallery-header">
+                <img src="${seal.photo}" alt="${seal.name}" class="gallery-avatar">
+                <h2>${seal.name}</h2>
+            </div>
+            <div class="seal-photos-container">
+                ${seal.photos.map(photo => `
+                    <div class="seal-photo-item">
+                        <img src="${photo}" alt="${seal.name}">
+                    </div>
+                `).join('')}
+            </div>
+            <button class="back-btn back-to-seal">← Назад к тюленю</button>
+        </div>
+    `;
+    
+    document.getElementById('sealsContainer').innerHTML = galleryHTML;
+    initPhotoModal();
+    
+    document.querySelector('.back-to-seal').addEventListener('click', () => {
+        showSeals(window.currentCenter);
+    });
+}
+
+function initPhotoModal() {
+    const modal = document.createElement('div');
+    modal.className = 'photo-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img class="modal-photo" src="" alt="">
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.querySelectorAll('.seal-photo-item img').forEach(photo => {
+        photo.addEventListener('click', () => {
+            modal.querySelector('.modal-photo').src = photo.src;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         });
     });
 
-    closeBtn.addEventListener('click', () => {
+    modal.querySelector('.close-modal').addEventListener('click', () => {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     });
