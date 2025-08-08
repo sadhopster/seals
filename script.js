@@ -203,9 +203,22 @@ function initCarousel() {
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     let currentIndex = 0;
+
+    // Восстанавливаем индекс тюленя, если он сохранён
+    const sealsForCenter = centersData[window.currentCenter] || [];
+    if (window.currentSealId) {
+        const restoredIndex = sealsForCenter.findIndex(s => s.id === window.currentSealId);
+        if (restoredIndex !== -1) {
+            currentIndex = restoredIndex;
+        }
+    }
+
     initSealGalleries(); 
-    // Устанавливаем начальную позицию
+    // Устанавливаем начальную позицию и активную точку
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+    });
 
     function updateCarousel(newIndex) {
         currentIndex = newIndex;
@@ -215,6 +228,9 @@ function initCarousel() {
         dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === currentIndex);
         });
+
+        // Сохраняем выбранного тюленя, чтобы возвращаться на ту же карточку
+        window.currentSealId = cards[currentIndex]?.dataset.seal;
     }
 
     prevBtn.addEventListener('click', () => {
@@ -246,7 +262,7 @@ function initCarousel() {
         if (!isDragging) return;
         const x = e.clientX;
         const diff = startX - x;
-        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px)`;
+        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px))`;
     });
 
     track.addEventListener('mouseup', (e) => {
@@ -285,7 +301,7 @@ function initCarousel() {
         if (!isDragging) return;
         const x = e.touches[0].clientX;
         const diff = startX - x;
-        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px)`;
+        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px))`;
     });
 
     track.addEventListener('touchend', (e) => {
@@ -317,6 +333,8 @@ function initCarousel() {
 
     document.querySelector('.back-btn')?.addEventListener('click', (e) => {
         e.stopPropagation(); // Предотвращаем всплытие события
+        // Возврат к центрам — сбрасываем выбранного тюленя
+        window.currentSealId = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
     });
@@ -333,6 +351,8 @@ function initCarousel() {
     window.addEventListener('resize', updateCardSizes);
     
     document.querySelector('.back-to-centers')?.addEventListener('click', () => {
+        // Возврат к центрам — сбрасываем выбранного тюленя
+        window.currentSealId = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
     });
@@ -384,6 +404,8 @@ function initSealGalleries() {
             const sealId = card.dataset.seal;
             const center = window.currentCenter;
             const seal = centersData[center].find(s => s.id === sealId);
+            // Запоминаем текущего тюленя для возврата на ту же карточку
+            window.currentSealId = sealId;
             
             if (seal && seal.photos && seal.photos.length > 0) {
                 showSealGallery(seal);
