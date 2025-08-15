@@ -99,9 +99,114 @@ const centersData = {
     sasha: [
         { photo: 'sasha1.png', description: 'Рисунок Йо-чан на судоку' },
         { photo: 'sasha2.jpg', description: 'Рисунок Цуки и Йо' },
-        { photo: 'sasha3.jpg', description: 'Батон' }
+        { photo: 'sasha3.jpg', description: 'Батончик' }
     ]
 };
+
+// ===== Лайки =====
+const LIKED_KEY = 'likedSealKeys';
+
+function buildSealKey(center, sealId) {
+    return `${center}:${sealId}`;
+}
+
+function readLikedSet() {
+    try {
+        const raw = localStorage.getItem(LIKED_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return new Set(Array.isArray(arr) ? arr : []);
+    } catch (e) {
+        return new Set();
+    }
+}
+
+function writeLikedSet(set) {
+    try {
+        localStorage.setItem(LIKED_KEY, JSON.stringify(Array.from(set)));
+    } catch (e) {
+        // ignore
+    }
+}
+
+function isSealLiked(center, sealId) {
+    const set = readLikedSet();
+    return set.has(buildSealKey(center, sealId));
+}
+
+function toggleLike(center, sealId) {
+    const set = readLikedSet();
+    const key = buildSealKey(center, sealId);
+    if (set.has(key)) {
+        set.delete(key);
+        writeLikedSet(set);
+        return false;
+    }
+    set.add(key);
+    writeLikedSet(set);
+    return true;
+}
+
+function getLikedSealsData() {
+    const set = readLikedSet();
+    const keys = Array.from(set);
+    const liked = [];
+    keys.forEach(k => {
+        const [center, id] = k.split(':');
+        const list = centersData[center];
+        if (!list) return;
+        const seal = list.find(s => s.id === id);
+        if (seal) {
+            liked.push({ ...seal, _center: center });
+        }
+    });
+    return liked;
+}
+
+// ===== Тюлень дня =====
+const DAILY_SEAL_KEY = 'dailySeal';
+const DAILY_SEAL_DATE_KEY = 'dailySealDate';
+
+function getDailySeal() {
+    const today = new Date().toDateString();
+    const storedDate = localStorage.getItem(DAILY_SEAL_DATE_KEY);
+    
+    // Если тюлень дня уже выбран сегодня - возвращаем его
+    if (storedDate === today) {
+        const storedSeal = localStorage.getItem(DAILY_SEAL_KEY);
+        return storedSeal ? JSON.parse(storedSeal) : null;
+    }
+    
+    // Собираем всех тюленей из всех центров
+    const allSeals = [
+        ...centersData.tokkari,
+        ...centersData.kamogawa
+    ];
+    
+    // Выбираем случайного тюленя
+    const randomIndex = Math.floor(Math.random() * allSeals.length);
+    const dailySeal = allSeals[randomIndex];
+    
+    // Сохраняем на сегодня
+    localStorage.setItem(DAILY_SEAL_KEY, JSON.stringify(dailySeal));
+    localStorage.setItem(DAILY_SEAL_DATE_KEY, today);
+    
+    return dailySeal;
+}
+
+// Генерируем забавное объяснение, почему это твой тюлень сегодня
+function getDailySealExplanation(seal) {
+    const explanations = [
+        `Сегодня вы ${seal.features.toLowerCase()}, прямо как ${seal.name}!`,
+        `Ваша энергия сегодня полностью совпадает с энергией ${seal.name}.`,
+        `Сегодня вы разделяете с ${seal.name} его особые черты характера.`,
+        `Ваше настроение сегодня напоминает настроение ${seal.name}.`,
+        `Как и ${seal.name}, сегодня вы проявляете свои уникальные качества.`,
+        `Сегодня вы так же очаровательны, как ${seal.name}!`,
+        `Ваши сегодняшние планы идеально совпадают с образом жизни ${seal.name}.`
+    ];
+    
+    return explanations[Math.floor(Math.random() * explanations.length)];
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const centerCards = document.querySelectorAll('.center-card');
@@ -124,13 +229,35 @@ function showSeals(center) {
     
     if (center === 'sasha') {
         initGallery();
+    } else if (center === 'daily-seal') {
+        initLikeButtons();
+        initSealGalleries();
+        initShareButton();
+        initBackButton();
     } else {
         initCarousel();
     }
 }
 
 function createSealsHTML(center) {
-    const seals = centersData[center];
+    let seals;
+    if (center === 'liked') {
+        seals = getLikedSealsData();
+        if (!seals || seals.length === 0) {
+            return `
+                <div class="seals-carousel">
+                    <h2 class="title">Понравившиеся тюлени</h2>
+                    <div class="empty-liked">
+                        <p>Вы пока никого не лайкнули.</p>
+                        <button class="back-btn back-to-centers">← Назад к центрам</button>
+                    </div>
+                </div>
+            `;
+        }
+    } else {
+        seals = centersData[center];
+    }
+    
     if (center === 'sasha') {
         return `
             <div class="seal-gallery">
@@ -156,13 +283,72 @@ function createSealsHTML(center) {
             </div>
         `;
     }
+    
+    if (center === 'daily-seal') {
+        const dailySeal = getDailySeal();
+        if (!dailySeal) {
+            return `
+                <div class="seals-carousel">
+                    <h2 class="title">Тюлень дня</h2>
+                    <div class="empty-liked">
+                        <p>Не удалось определить тюленя дня.</p>
+                        <button class="back-btn back-to-centers">← Назад к центрам</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        const sealCenter = centersData.tokkari.includes(dailySeal) ? 'tokkari' : 'kamogawa';
+        
+        return `
+            <div class="seals-carousel">
+                <h2 class="title">Ваш тюлень дня</h2>
+                <div class="carousel-container" style="min-height: auto;">
+                    <div class="carousel-track" style="transform: none; display: block;">
+                        <div class="seal-card active" data-seal="${dailySeal.id}" data-center="${sealCenter}">
+                            <div class="card-image">
+                                <div class="seal-avatar">
+                                    <img src="${dailySeal.photo}" alt="${dailySeal.name}">
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h2 class="seal-name">${dailySeal.name} 
+                                    <span class="daily-seal-badge">Тюлень дня</span>
+                                </h2>
+                                <p class="seal-species">${dailySeal.species}</p>
+                                <div class="seal-info">
+                                    ${dailySeal.age ? `<p><strong>Возраст:</strong> ${dailySeal.age}</p>` : ''}
+                                    ${dailySeal.weight ? `<p><strong>Вес:</strong> ${dailySeal.weight}</p>` : ''}
+                                    ${dailySeal.features ? `<p><strong>Особенности:</strong> ${dailySeal.features}</p>` : ''}
+                                </div>
+                                <p class="seal-description">${dailySeal.description}</p>
+                                <p class="seal-description" style="margin-top: 15px; font-style: italic;">
+                                    <strong>Почему это ваш тюлень сегодня?</strong><br>
+                                    ${getDailySealExplanation(dailySeal)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="back-btn back-to-centers">← Назад к центрам</button>
+                <button class="back-btn" id="share-daily-seal" style="margin-top: 10px;">
+                    Поделиться своим тюленем
+                </button>
+            </div>
+        `;
+    }
+    
     return `
         <div class="seals-carousel">
-            <h2 class="title">Тюлени ${center === 'tokkari' ? 'Tokkari' : 'Kamogawa'} Center</h2>
+            <h2 class="title">${center === 'liked' ? 'Понравившиеся тюлени' : `Тюлени ${center === 'tokkari' ? 'Tokkari' : 'Kamogawa'} Center`}</h2>
             <div class="carousel-container">
                 <div class="carousel-track">
-                    ${seals.map((seal, index) => `
-                        <div class="seal-card ${index === 0 ? 'active' : ''}" data-seal="${seal.id}">
+                    ${seals.map((seal, index) => {
+                        const sealCenter = center === 'liked' ? seal._center : center;
+                        const liked = isSealLiked(sealCenter, seal.id);
+                        return `
+                        <div class="seal-card ${index === 0 ? 'active' : ''}" data-seal="${seal.id}" data-center="${sealCenter}">
+                            <button class="like-btn ${liked ? 'liked' : ''}" aria-label="Нравится" data-center="${sealCenter}" data-seal="${seal.id}">❤</button>
                             <div class="card-image">
                                 <div class="seal-avatar">
                                     <img src="${seal.photo}" alt="${seal.name}">
@@ -179,7 +365,8 @@ function createSealsHTML(center) {
                                 <p class="seal-description">${seal.description}</p>
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
             <div class="carousel-nav">
@@ -197,28 +384,61 @@ function createSealsHTML(center) {
 }
 
 function initCarousel() {
-        const track = document.querySelector('.carousel-track');
+    const track = document.querySelector('.carousel-track');
     const cards = document.querySelectorAll('.seal-card');
     const dots = document.querySelectorAll('.dot');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     let currentIndex = 0;
 
+    // Если карусели нет (например, пустые понравившиеся) — выходим
+    if (!track || cards.length === 0) {
+        document.querySelector('.back-btn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.currentSealId = undefined;
+            window.currentSealKey = undefined;
+            document.getElementById('sealsContainer').style.display = 'none';
+            document.getElementById('centersCard').style.display = 'block';
+        });
+        return;
+    }
+
     // Восстанавливаем индекс тюленя, если он сохранён
-    const sealsForCenter = centersData[window.currentCenter] || [];
-    if (window.currentSealId) {
-        const restoredIndex = sealsForCenter.findIndex(s => s.id === window.currentSealId);
-        if (restoredIndex !== -1) {
-            currentIndex = restoredIndex;
-        }
+    const isLikedCenter = window.currentCenter === 'liked';
+    let sealsForCarousel = [];
+    if (isLikedCenter) {
+        sealsForCarousel = getLikedSealsData();
+    } else {
+        sealsForCarousel = centersData[window.currentCenter] || [];
+    }
+
+    if (window.currentSealKey) {
+        const [savedCenter, savedId] = String(window.currentSealKey).split(':');
+        const restoredIndex = sealsForCarousel.findIndex(s => {
+            const centerOfSeal = isLikedCenter ? s._center : window.currentCenter;
+            return centerOfSeal === savedCenter && s.id === savedId;
+        });
+        if (restoredIndex !== -1) currentIndex = restoredIndex;
+    } else if (window.currentSealId) {
+        const restoredIndex = sealsForCarousel.findIndex(s => s.id === window.currentSealId);
+        if (restoredIndex !== -1) currentIndex = restoredIndex;
     }
 
     initSealGalleries(); 
+    initLikeButtons();
     // Устанавливаем начальную позицию и активную точку
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
     dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentIndex);
     });
+    // Сохраняем выбранного тюленя сразу после инициализации
+    const initialCard = cards[currentIndex];
+    if (initialCard) {
+        const initSealId = initialCard.dataset.seal;
+        const initCenter = initialCard.dataset.center || window.currentCenter;
+        window.currentSealId = initSealId;
+        window.currentSealKey = `${initCenter}:${initSealId}`;
+    }
 
     function updateCarousel(newIndex) {
         currentIndex = newIndex;
@@ -230,7 +450,10 @@ function initCarousel() {
         });
 
         // Сохраняем выбранного тюленя, чтобы возвращаться на ту же карточку
-        window.currentSealId = cards[currentIndex]?.dataset.seal;
+        const activeCard = cards[currentIndex];
+        window.currentSealId = activeCard?.dataset.seal;
+        const activeCenter = activeCard?.dataset.center || window.currentCenter;
+        window.currentSealKey = `${activeCenter}:${window.currentSealId}`;
     }
 
     prevBtn.addEventListener('click', () => {
@@ -335,6 +558,7 @@ function initCarousel() {
         e.stopPropagation(); // Предотвращаем всплытие события
         // Возврат к центрам — сбрасываем выбранного тюленя
         window.currentSealId = undefined;
+        window.currentSealKey = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
     });
@@ -353,6 +577,7 @@ function initCarousel() {
     document.querySelector('.back-to-centers')?.addEventListener('click', () => {
         // Возврат к центрам — сбрасываем выбранного тюленя
         window.currentSealId = undefined;
+        window.currentSealKey = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
     });
@@ -401,11 +626,15 @@ function initGallery() {
 function initSealGalleries() {
     document.querySelectorAll('.seal-card').forEach(card => {
         card.addEventListener('click', (e) => {
+            if (e.target && e.target.closest('.like-btn')) {
+                return; // клик по лайку не открывает галерею
+            }
             const sealId = card.dataset.seal;
-            const center = window.currentCenter;
-            const seal = centersData[center].find(s => s.id === sealId);
+            const center = card.dataset.center || window.currentCenter;
+            const seal = centersData[center]?.find(s => s.id === sealId);
             // Запоминаем текущего тюленя для возврата на ту же карточку
             window.currentSealId = sealId;
+            window.currentSealKey = `${center}:${sealId}`;
             
             if (seal && seal.photos && seal.photos.length > 0) {
                 showSealGallery(seal);
@@ -469,5 +698,53 @@ function initPhotoModal() {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
+    });
+}
+
+function initLikeButtons() {
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const center = btn.dataset.center;
+            const sealId = btn.dataset.seal;
+            const nowLiked = toggleLike(center, sealId);
+            btn.classList.toggle('liked', nowLiked);
+            // Если мы находимся в центре понравившихся — перерисуем список
+            if (window.currentCenter === 'liked') {
+                showSeals('liked');
+            }
+        });
+    });
+}
+
+// Инициализация кнопки "Поделиться"
+function initShareButton() {
+    const shareBtn = document.getElementById('share-daily-seal');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            const dailySeal = getDailySeal();
+            const text = `Мой тюлень дня: ${dailySeal.name}!\n${dailySeal.description}\n\nПосмотрите, какой тюлень вам сегодня подходит: ${window.location.href}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Мой тюлень дня',
+                    text: text,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Для браузеров без поддержки Web Share API
+                prompt('Скопируйте ссылку и поделитесь с друзьями:', text);
+            }
+        });
+    }
+}
+
+function initBackButton() {
+    document.querySelector('.back-to-centers')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.currentSealId = undefined;
+        window.currentSealKey = undefined;
+        document.getElementById('sealsContainer').style.display = 'none';
+        document.getElementById('centersCard').style.display = 'block';
     });
 }

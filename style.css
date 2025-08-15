@@ -60,8 +60,9 @@ body {
     border-radius: 20px;
     padding: 30px;
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: visible;
 }
 
 .title {
@@ -75,6 +76,7 @@ body {
     display: flex;
     gap: 30px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .center-card {
@@ -166,6 +168,47 @@ body {
     top: 0;
     left: 0;
     width: 100%;
+}
+
+.like-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    color: #e53e3e;
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.like-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.like-btn.liked {
+    background: #ffe3e3;
+    color: #e11d48;
+}
+
+.empty-liked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    gap: 16px;
+    color: #4a5568;
 }
 
 .seal-card.active {
@@ -1378,4 +1421,47 @@ body {
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
+}
+
+/* Добавляем в style.css */
+.daily-seal-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* Общие стили для аватарок всех центров */
+.center-img {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.center-img img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+/* Специфичные стили для аватарок центров "Понравившиеся" и "Тюлень дня" */
+.center-card[data-center="liked"] .center-img img,
+.center-card[data-center="daily-seal"] .center-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    padding: 10px;
 }
