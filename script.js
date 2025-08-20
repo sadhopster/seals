@@ -290,10 +290,7 @@ function showSeals(center) {
     if (center === 'sasha') {
         initGallery();
     } else if (center === 'daily-seal') {
-        initLikeButtons();
-        initSealGalleries();
-        initShareButton();
-        initBackButton();
+        initDailySealFlow();
     } else if (center === 'guess') {
         initGuessGame();
     } else {
@@ -347,61 +344,17 @@ function createSealsHTML(center) {
     }
     
     if (center === 'daily-seal') {
-        const dailySeal = getDailySeal();
-        if (!dailySeal) {
-            return `
-                <div class="seals-carousel">
-                    <h2 class="title">Тюлень дня</h2>
-                    <div class="empty-liked">
-                        <p>Не удалось определить тюленя дня.</p>
-                        <button class="back-btn back-to-centers">← Назад к центрам</button>
-                    </div>
-                </div>
-            `;
+        const today = new Date().toDateString();
+        const storedDate = localStorage.getItem(DAILY_SEAL_DATE_KEY);
+        const storedSealRaw = localStorage.getItem(DAILY_SEAL_KEY);
+        if (storedDate === today && storedSealRaw) {
+            try {
+                const storedSeal = JSON.parse(storedSealRaw);
+                return renderDailyResultCard(storedSeal);
+            } catch (_) {
+            }
         }
-        
-        const sealCenter = centersData.tokkari.includes(dailySeal)
-            ? 'tokkari'
-            : centersData.kamogawa.includes(dailySeal)
-                ? 'kamogawa'
-                : 'kaiyukan';
-        
-        return `
-            <div class="seals-carousel">
-                <h2 class="title">Ваш тюлень дня</h2>
-                <div class="carousel-container" style="min-height: auto;">
-                    <div class="carousel-track" style="transform: none; display: block;">
-                        <div class="seal-card active" data-seal="${dailySeal.id}" data-center="${sealCenter}">
-                            <div class="card-image">
-                                <div class="seal-avatar">
-                                    <img src="${dailySeal.photo}" alt="${dailySeal.name}">
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <h2 class="seal-name">${dailySeal.name} 
-                                    <span class="daily-seal-badge">Тюлень дня</span>
-                                </h2>
-                                <p class="seal-species">${dailySeal.species}</p>
-                                <div class="seal-info">
-                                    ${dailySeal.age ? `<p><strong>Возраст:</strong> ${dailySeal.age}</p>` : ''}
-                                    ${dailySeal.weight ? `<p><strong>Вес:</strong> ${dailySeal.weight}</p>` : ''}
-                                    ${dailySeal.features ? `<p><strong>Особенности:</strong> ${dailySeal.features}</p>` : ''}
-                                </div>
-                                <p class="seal-description">${dailySeal.description}</p>
-                                <p class="seal-description" style="margin-top: 15px; font-style: italic;">
-                                    <strong>Почему это ваш тюлень сегодня?</strong><br>
-                                    ${getDailySealExplanation(dailySeal)}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="back-btn back-to-centers">← Назад к центрам</button>
-                <button class="back-btn" id="share-daily-seal" style="margin-top: 10px;">
-                    Поделиться своим тюленем
-                </button>
-            </div>
-        `;
+        return createDailyQuizHTML();
     }
     
     if (center === 'guess') {
@@ -1104,4 +1057,253 @@ function initBackButton() {
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
     });
+}
+
+// =========================
+// Daily quiz flow
+// =========================
+
+const DAILY_QUIZ_QUESTIONS = [
+    {
+        id: 'mood',
+        text: 'Какое у вас сегодня настроение?',
+        options: [
+            { text: 'Энергичное', scores: { 'yo-chan': 2, 'tsuki-chan': 1 } },
+            { text: 'Спокойное', scores: { 'uki': 2, 'Arare': 1 } },
+            { text: 'Игривое/хаотичное', scores: { 'tsuki-chan': 2, 'yo-chan': 1 } },
+            { text: 'Немного ворчливое', scores: { 'aru': 2, 'Moya': 1 } }
+        ]
+    },
+    {
+        id: 'company',
+        text: 'Как вам комфортнее проводить день?',
+        options: [
+            { text: 'В одиночку', scores: { 'mashiro-kun': 2, 'Moya': 1 } },
+            { text: 'С партнёром', scores: { 'seal-6': 2, 'katsunori-kun': 1 } },
+            { text: 'С семьёй', scores: { 'Tino': 2, 'aru': 1 } },
+            { text: 'С компанией друзей', scores: { 'yo-chan': 2, 'uki': 1 } }
+        ]
+    },
+    {
+        id: 'vibe',
+        text: 'Какую атмосферу излучаете сегодня?',
+        options: [
+            { text: 'Королевскую', scores: { 'Arare': 3 } },
+            { text: 'Мягкую и уютную', scores: { 'uki': 3 } },
+            { text: 'Тайную и загадочную', scores: { 'Moya': 3 } },
+            { text: 'Задорную', scores: { 'tsuki-chan': 2, 'yo-chan': 1 } }
+        ]
+    },
+    {
+        id: 'activity',
+        text: 'Что больше по душе из активностей?',
+        options: [
+            { text: 'Брызгаться и веселиться', scores: { 'Tino': 3, 'tsuki-chan': 1 } },
+            { text: 'Спокойно отдыхать', scores: { 'uki': 2, 'katsunori-kun': 1 } },
+            { text: 'Исследовать новое', scores: { 'Moya': 2, 'Arare': 1 } },
+            { text: 'Тренироваться/заниматься делом', scores: { 'yo-chan': 2, 'katsunori-kun': 1 } }
+        ]
+    },
+    {
+        id: 'appetite',
+        text: 'Какой у вас сегодня аппетит?',
+        options: [
+            { text: 'Хочу всего и побольше', scores: { 'yo-chan': 2, 'Tino': 1 } },
+            { text: 'Хочу что‑то изысканное', scores: { 'Arare': 2 } },
+            { text: 'Лёгкий перекус', scores: { 'mashiro-kun': 2, 'uki': 1 } },
+            { text: 'Не определился(ась)', scores: { 'Moya': 1, 'aru': 1 } }
+        ]
+    }
+];
+
+function createDailyQuizHTML() {
+    return `
+        <div class="seals-carousel">
+            <h2 class="title">Какой вы сегодня тюлень?</h2>
+            <div class="daily-quiz">
+                <div class="quiz-progress"><span class="quiz-progress-text">Вопрос 1 из ${DAILY_QUIZ_QUESTIONS.length}</span></div>
+                <div class="quiz-step" data-step-index="0">
+                    ${renderQuizStep(0)}
+                </div>
+                <div class="quiz-controls">
+                    <button class="back-btn back-to-centers">← Назад к центрам</button>
+                    <button class="back-btn quiz-next" disabled>Далее →</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderQuizStep(stepIndex) {
+    const q = DAILY_QUIZ_QUESTIONS[stepIndex];
+    return `
+        <div class="quiz-question">${q.text}</div>
+        <div class="quiz-options">
+            ${q.options.map((opt, i) => `
+                <button class="quiz-option" data-index="${i}">${opt.text}</button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function initDailySealFlow() {
+    // If we see a result view, wire share/back/retake
+    if (document.getElementById('share-daily-seal')) {
+        initSealGalleries();
+        initShareButton();
+        initBackButton();
+        const retake = document.getElementById('retake-daily-quiz');
+        if (retake) {
+            retake.addEventListener('click', () => {
+                try {
+                    localStorage.removeItem(DAILY_SEAL_KEY);
+                    localStorage.removeItem(DAILY_SEAL_DATE_KEY);
+                } catch (_) {}
+                showSeals('daily-seal');
+            });
+        }
+        return;
+    }
+
+    const quizEl = document.querySelector('.daily-quiz');
+    if (!quizEl) {
+        initBackButton();
+        return;
+    }
+    initBackButton();
+
+    let currentStep = 0;
+    const answers = [];
+    const progressText = quizEl.querySelector('.quiz-progress-text');
+    const stepContainer = quizEl.querySelector('.quiz-step');
+    const nextBtn = quizEl.querySelector('.quiz-next');
+
+    function updateProgress() {
+        progressText.textContent = `Вопрос ${currentStep + 1} из ${DAILY_QUIZ_QUESTIONS.length}`;
+    }
+
+    function mountStep() {
+        stepContainer.dataset.stepIndex = String(currentStep);
+        stepContainer.innerHTML = renderQuizStep(currentStep);
+        nextBtn.disabled = true;
+        stepContainer.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                stepContainer.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                nextBtn.disabled = false;
+            });
+        });
+        updateProgress();
+    }
+
+    nextBtn.addEventListener('click', () => {
+        const selected = stepContainer.querySelector('.quiz-option.selected');
+        if (!selected) return;
+        const optIndex = parseInt(selected.dataset.index, 10);
+        answers[currentStep] = optIndex;
+        if (currentStep < DAILY_QUIZ_QUESTIONS.length - 1) {
+            currentStep += 1;
+            mountStep();
+        } else {
+            const resultId = scoreDailyQuiz(answers);
+            const { seal, center } = findSealById(resultId) || {};
+            const finalSeal = seal || getDailySeal();
+            try {
+                localStorage.setItem(DAILY_SEAL_KEY, JSON.stringify(finalSeal));
+                localStorage.setItem(DAILY_SEAL_DATE_KEY, new Date().toDateString());
+            } catch (_) {}
+            const container = document.getElementById('sealsContainer');
+            if (container) {
+                container.innerHTML = renderDailyResultCard(finalSeal);
+                initDailySealFlow();
+            }
+        }
+    });
+
+    mountStep();
+}
+
+function scoreDailyQuiz(answers) {
+    const scoreMap = {};
+    answers.forEach((optIndex, step) => {
+        const q = DAILY_QUIZ_QUESTIONS[step];
+        const opt = q && q.options && q.options[optIndex];
+        if (!opt) return;
+        Object.entries(opt.scores).forEach(([sealId, delta]) => {
+            scoreMap[sealId] = (scoreMap[sealId] || 0) + Number(delta || 0);
+        });
+    });
+    let bestId = null;
+    let bestScore = -Infinity;
+    Object.entries(scoreMap).forEach(([id, sc]) => {
+        if (sc > bestScore) { bestScore = sc; bestId = id; }
+    });
+    // Fallback if nothing scored
+    if (!bestId) {
+        const all = getAllSealsList();
+        bestId = (all[Math.floor(Math.random() * all.length)] || {}).id;
+    }
+    return bestId;
+}
+
+function findSealById(sealId) {
+    const centers = ['tokkari', 'kamogawa', 'kaiyukan'];
+    for (const c of centers) {
+        const s = (centersData[c] || []).find(x => x.id === sealId);
+        if (s) return { seal: s, center: c };
+    }
+    return null;
+}
+
+function renderDailyResultCard(dailySeal) {
+    if (!dailySeal) {
+        return `
+            <div class="seals-carousel">
+                <h2 class="title">Тюлень дня</h2>
+                <div class="empty-liked">
+                    <p>Не удалось определить тюленя дня.</p>
+                    <button class="back-btn back-to-centers">← Назад к центрам</button>
+                </div>
+            </div>
+        `;
+    }
+    const found = findSealById(dailySeal.id) || {};
+    const sealCenter = found.center || 'tokkari';
+    return `
+        <div class="seals-carousel">
+            <h2 class="title">Ваш тюлень сегодня</h2>
+            <div class="carousel-container" style="min-height: auto;">
+                <div class="carousel-track" style="transform: none; display: block;">
+                    <div class="seal-card active" data-seal="${dailySeal.id}" data-center="${sealCenter}">
+                        <div class="card-image">
+                            <div class="seal-avatar">
+                                <img src="${dailySeal.photo}" alt="${dailySeal.name}">
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="seal-name">${dailySeal.name}
+                                <span class="daily-seal-badge">Тюлень дня</span>
+                            </h2>
+                            <p class="seal-species">${dailySeal.species || ''}</p>
+                            <div class="seal-info">
+                                ${dailySeal.age ? `<p><strong>Возраст:</strong> ${dailySeal.age}</p>` : ''}
+                                ${dailySeal.weight ? `<p><strong>Вес:</strong> ${dailySeal.weight}</p>` : ''}
+                                ${dailySeal.features ? `<p><strong>Особенности:</strong> ${dailySeal.features}</p>` : ''}
+                            </div>
+                            <p class="seal-description">${dailySeal.description || ''}</p>
+                            <p class="seal-description" style="margin-top: 15px; font-style: italic;">
+                                <strong>Почему это ваш тюлень сегодня?</strong><br>
+                                ${getDailySealExplanation(dailySeal)}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="quiz-result-actions">
+                <button class="back-btn back-to-centers">← Назад к центрам</button>
+                <button class="back-btn" id="share-daily-seal">Поделиться</button>
+                <button class="back-btn" id="retake-daily-quiz">Пройти заново</button>
+            </div>
+        </div>
+    `;
 }
