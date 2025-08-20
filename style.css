@@ -1,4 +1,3 @@
-/* style.css */
 * {
     margin: 0;
     padding: 0;
@@ -296,7 +295,6 @@ body {
     color: #4a5568;
 }
 
-/* Навигация */
 .carousel-nav {
     display: flex;
     align-items: center;
@@ -371,7 +369,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Анимации */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -383,7 +380,6 @@ body {
     }
 }
 
-/* Эффекты для аватара */
 .seal-avatar::after {
     content: '';
     position: absolute;
@@ -470,21 +466,20 @@ body {
     }
 }
 
-/* Обновленные стили для карточек */
 .carousel-container {
     position: relative;
     overflow: hidden;
     border-radius: 15px;
     margin-bottom: 1.5rem;
-    min-height: 400px; /* Уменьшил высоту контейнера */
+    min-height: 400px; 
 }
 
 .seal-card {
     min-width: 100%;
     display: flex;
-    gap: 2rem; /* Уменьшил отступ между изображением и текстом */
-    padding: 1.5rem; /* Уменьшил внутренние отступы */
-    min-height: 380px; /* Уменьшил минимальную высоту */
+    gap: 2rem; 
+    padding: 1.5rem;
+    min-height: 380px; 
     align-items: center;
     position: absolute;
     top: 0;
@@ -493,14 +488,14 @@ body {
 }
 
 .card-image {
-    flex: 0 0 280px; /* Немного уменьшил ширину изображения */
+    flex: 0 0 280px; 
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .seal-avatar {
-    width: 220px; /* Уменьшил размер аватара */
+    width: 220px;
     height: 220px;
     border-radius: 50%;
     position: relative;
@@ -514,21 +509,20 @@ body {
 }
 
 .seal-name {
-    font-size: 2rem; /* Уменьшил размер шрифта */
+    font-size: 2rem; 
     margin-bottom: 0.5rem;
 }
 
 .seal-info {
-    padding: 1rem; /* Уменьшил отступы */
-    margin-bottom: 1rem; /* Уменьшил отступ снизу */
+    padding: 1rem; 
+    margin-bottom: 1rem; 
 }
 
 .seal-description {
-    font-size: 0.95rem; /* Уменьшил размер шрифта */
+    font-size: 0.95rem; 
     line-height: 1.6;
 }
 
-/* Адаптивность для мобильных */
 @media (max-width: 768px) {
     .carousel-container {
         min-height: 350px;
@@ -619,22 +613,21 @@ body {
         height: 140px;
     }
 }
-/* Добавляем в style.css */
-/* Стиль для галереи рисунков */
+
 .sasha-gallery {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
     padding: 30px;
     width: 100%;
     max-width: 1200px;
-    overflow-x: auto; /* Добавляем прокрутку если не помещается */
+    overflow-x: auto; 
 }
 
 .gallery-row {
     display: flex;
     gap: 30px;
     padding: 20px 0;
-    width: max-content; /* Ширина по содержимому */
+    width: max-content; 
     min-width: 100%;
 }
 
@@ -668,7 +661,6 @@ body {
     font-weight: 500;
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     .gallery-item {
         min-width: 250px;
@@ -679,17 +671,14 @@ body {
     }
 }
 
-/* Обновляем стиль аватарки центра */
 .center-card[data-center="sasha"] .center-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    padding: 10px; /* Отступ от краёв */
+    padding: 10px; 
 }
 
-/* Добавляем в style.css */
-/* Стили для модального окна */
 .photo-modal {
     position: fixed;
     top: 0;
@@ -745,7 +734,6 @@ body {
     to { opacity: 1; }
 }
 
-/* Обновляем стили галереи */
 .gallery-item {
     cursor: pointer;
     transition: transform 0.3s;
@@ -777,7 +765,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Убираем абсолютное позиционирование и opacity */
 .seal-card {
     position: relative;
     opacity: 1 !important;
@@ -856,7 +843,7 @@ body {
         gap: 1rem;
     }
 }
-/* Исправления для текста в карточках */
+
 .seal-description, .seal-info p {
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -864,7 +851,6 @@ body {
     max-width: 100%;
 }
 
-/* Дополнительные исправления для мобильных */
 @media (max-width: 768px) {
     .card-content {
         padding: 0 10px;
@@ -883,7 +869,6 @@ body {
     }
 }
 
-/* Для очень маленьких экранов */
 @media (max-width: 400px) {
     .seal-description {
         font-size: 0.8rem;
@@ -924,7 +909,6 @@ body {
     display: inline-block;
 }
 
-/* Стили для галереи тюленей */
 .seal-gallery {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -979,7 +963,6 @@ body {
     margin: 20px auto 0;
   }
   
-  /* Адаптация для мобильных */
   @media (max-width: 768px) {
     .gallery-photos {
       grid-template-columns: repeat(2, 1fr);
@@ -997,10 +980,9 @@ body {
     padding: 30px;
     width: 100%;
     max-width: 1200px;
-    /* Убрали overflow-x: auto */
 }
 
-.gallery-grid {  /* Переименовываем .gallery-row в .gallery-grid */
+.gallery-grid {  
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
@@ -1015,7 +997,6 @@ body {
     text-align: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    /* Убрали min-width и flex-shrink */
 }
 
 @media (max-width: 768px) {
@@ -1035,7 +1016,6 @@ body {
     }
 }
 
-/* Стили для галереи Саши */
 .sasha-gallery {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -1046,9 +1026,9 @@ body {
 
 .gallery-container {
     display: flex;
-    flex-wrap: wrap; /* Перенос на новую строку */
+    flex-wrap: wrap; 
     gap: 20px;
-    justify-content: center; /* Центрирование карточек */
+    justify-content: center; 
     margin: 30px 0;
 }
 
@@ -1059,8 +1039,8 @@ body {
     text-align: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    width: 200px; /* Фиксированная ширина карточки */
-    cursor: pointer; /* Указатель при наведении */
+    width: 200px; 
+    cursor: pointer; 
 }
 
 .gallery-item:hover {
@@ -1081,7 +1061,6 @@ body {
     color: #4a5568;
 }
 
-/* Модальное окно */
 .photo-modal {
     position: fixed;
     top: 0;
@@ -1128,7 +1107,6 @@ body {
     }
 }
 
-/* Стили для галереи фотографий тюленя */
 .seal-gallery {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -1199,7 +1177,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .seal-photo-item {
         width: 160px;
@@ -1221,14 +1198,13 @@ body {
     }
 }
 
-/* Обновленные стили для шапки галереи */
 .gallery-header {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрирование по горизонтали */
+    align-items: center; 
     gap: 15px;
     margin-bottom: 30px;
-    text-align: center; /* Центрирование текста */
+    text-align: center; 
 }
 
 .gallery-avatar {
@@ -1247,7 +1223,6 @@ body {
     font-weight: 600;
 }
 
-/* Для мобильных устройств */
 @media (max-width: 480px) {
     .gallery-avatar {
         width: 80px;
@@ -1259,7 +1234,6 @@ body {
     }
 }
 
-/* Дополнительные стили для лучшего отображения */
 .avatar-container {
     display: flex;
     justify-content: center;
@@ -1279,15 +1253,14 @@ body {
     padding: 12px 30px;
 }
 
-/* Шапка галереи - аватар и имя в одной строке */
 .gallery-header {
     display: flex;
-    align-items: center; /* Выравнивание по вертикали */
-    justify-content: center; /* Центрирование всей группы */
-    gap: 20px; /* Расстояние между аватаром и именем */
+    align-items: center;
+    justify-content: center;
+    gap: 20px; 
     margin-bottom: 30px;
     width: 100%;
-    flex-wrap: wrap; /* На случай очень узких экранов */
+    flex-wrap: wrap; 
 }
 
 .gallery-avatar {
@@ -1297,7 +1270,7 @@ body {
     object-fit: cover;
     border: 3px solid #667eea;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0; /* Запрещаем уменьшение аватара */
+    flex-shrink: 0; 
 }
 
 .gallery-header h2 {
@@ -1305,7 +1278,7 @@ body {
     color: #2d3748;
     margin: 0;
     font-weight: 600;
-    white-space: nowrap; /* Имя в одну строку */
+    white-space: nowrap; 
 }
 
 /* Адаптивность */
@@ -1321,11 +1294,10 @@ body {
     
     .gallery-header h2 {
         font-size: 20px;
-        white-space: normal; /* Разрешаем перенос на мобильных */
+        white-space: normal; 
     }
 }
 
-/* Общие стили для галерей (и тюленей, и Саши) */
 .seal-gallery {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -1400,7 +1372,7 @@ body {
 }
 
 .seal-photo-item {
-    width: 200px; /* Фиксированная ширина карточки */
+    width: 200px;
     background: #f8fafc;
     border-radius: 12px;
     padding: 15px;
@@ -1423,7 +1395,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* Добавляем в style.css */
 .daily-seal-badge {
     background: linear-gradient(45deg, #ff6b6b, #ff8e53);
     color: white;
@@ -1436,7 +1407,6 @@ body {
     box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
-/* Общие стили для аватарок всех центров */
 .center-img {
     width: 180px;
     height: 180px;
@@ -1456,7 +1426,6 @@ body {
     object-fit: contain;
 }
 
-/* Специфичные стили для аватарок центров "Понравившиеся" и "Тюлень дня" */
 .center-card[data-center="liked"] .center-img img,
 .center-card[data-center="daily-seal"] .center-img img {
     width: 100%;

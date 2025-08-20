@@ -103,7 +103,6 @@ const centersData = {
     ]
 };
 
-// ===== Лайки =====
 const LIKED_KEY = 'likedSealKeys';
 
 function buildSealKey(center, sealId) {
@@ -124,7 +123,6 @@ function writeLikedSet(set) {
     try {
         localStorage.setItem(LIKED_KEY, JSON.stringify(Array.from(set)));
     } catch (e) {
-        // ignore
     }
 }
 
@@ -162,7 +160,6 @@ function getLikedSealsData() {
     return liked;
 }
 
-// ===== Тюлень дня =====
 const DAILY_SEAL_KEY = 'dailySeal';
 const DAILY_SEAL_DATE_KEY = 'dailySealDate';
 
@@ -170,30 +167,25 @@ function getDailySeal() {
     const today = new Date().toDateString();
     const storedDate = localStorage.getItem(DAILY_SEAL_DATE_KEY);
     
-    // Если тюлень дня уже выбран сегодня - возвращаем его
     if (storedDate === today) {
         const storedSeal = localStorage.getItem(DAILY_SEAL_KEY);
         return storedSeal ? JSON.parse(storedSeal) : null;
     }
     
-    // Собираем всех тюленей из всех центров
     const allSeals = [
         ...centersData.tokkari,
         ...centersData.kamogawa
     ];
     
-    // Выбираем случайного тюленя
     const randomIndex = Math.floor(Math.random() * allSeals.length);
     const dailySeal = allSeals[randomIndex];
     
-    // Сохраняем на сегодня
     localStorage.setItem(DAILY_SEAL_KEY, JSON.stringify(dailySeal));
     localStorage.setItem(DAILY_SEAL_DATE_KEY, today);
     
     return dailySeal;
 }
 
-// Генерируем забавное объяснение, почему это твой тюлень сегодня
 function getDailySealExplanation(seal) {
     const explanations = [
         `Сегодня вы ${seal.features.toLowerCase()}, прямо как ${seal.name}!`,
@@ -391,7 +383,6 @@ function initCarousel() {
     const nextBtn = document.querySelector('.next-btn');
     let currentIndex = 0;
 
-    // Если карусели нет (например, пустые понравившиеся) — выходим
     if (!track || cards.length === 0) {
         document.querySelector('.back-btn')?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -403,7 +394,6 @@ function initCarousel() {
         return;
     }
 
-    // Восстанавливаем индекс тюленя, если он сохранён
     const isLikedCenter = window.currentCenter === 'liked';
     let sealsForCarousel = [];
     if (isLikedCenter) {
@@ -426,12 +416,10 @@ function initCarousel() {
 
     initSealGalleries(); 
     initLikeButtons();
-    // Устанавливаем начальную позицию и активную точку
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
     dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentIndex);
     });
-    // Сохраняем выбранного тюленя сразу после инициализации
     const initialCard = cards[currentIndex];
     if (initialCard) {
         const initSealId = initialCard.dataset.seal;
@@ -449,7 +437,6 @@ function initCarousel() {
             dot.classList.toggle('active', i === currentIndex);
         });
 
-        // Сохраняем выбранного тюленя, чтобы возвращаться на ту же карточку
         const activeCard = cards[currentIndex];
         window.currentSealId = activeCard?.dataset.seal;
         const activeCenter = activeCard?.dataset.center || window.currentCenter;
@@ -472,7 +459,6 @@ function initCarousel() {
         });
     });
 
-    // Добавляем поддержку свайпа
     let startX = 0;
     let isDragging = false;
 
@@ -496,13 +482,10 @@ function initCarousel() {
         const diff = startX - x;
         
         if (diff > 50 && currentIndex < cards.length - 1) {
-            // Свайп влево - следующая карточка
             updateCarousel(currentIndex + 1);
         } else if (diff < -50 && currentIndex > 0) {
-            // Свайп вправо - предыдущая карточка
             updateCarousel(currentIndex - 1);
         } else {
-            // Возвращаем на место
             track.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
     });
@@ -514,7 +497,6 @@ function initCarousel() {
         }
     });
 
-    // Для мобильных устройств (тач-события)
     track.addEventListener('touchstart', (e) => {
         isDragging = true;
         startX = e.touches[0].clientX;
@@ -543,7 +525,6 @@ function initCarousel() {
         }
     });
 
-    // Поддержка клавиатуры
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') {
             const newIndex = currentIndex === 0 ? cards.length - 1 : currentIndex - 1;
@@ -555,8 +536,7 @@ function initCarousel() {
     });
 
     document.querySelector('.back-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation(); // Предотвращаем всплытие события
-        // Возврат к центрам — сбрасываем выбранного тюленя
+        e.stopPropagation();
         window.currentSealId = undefined;
         window.currentSealKey = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
@@ -575,7 +555,6 @@ function initCarousel() {
     window.addEventListener('resize', updateCardSizes);
     
     document.querySelector('.back-to-centers')?.addEventListener('click', () => {
-        // Возврат к центрам — сбрасываем выбранного тюленя
         window.currentSealId = undefined;
         window.currentSealKey = undefined;
         document.getElementById('sealsContainer').style.display = 'none';
@@ -589,7 +568,6 @@ function initGallery() {
     const modalDesc = modal.querySelector('.modal-description');
     const closeBtn = modal.querySelector('.close-modal');
     
-    // Обработчики для фотографий
     document.querySelectorAll('.seal-photo-item').forEach(item => {
         item.addEventListener('click', () => {
             const img = item.querySelector('img');
@@ -603,7 +581,6 @@ function initGallery() {
         });
     });
     
-    // Закрытие модального окна
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
@@ -616,7 +593,6 @@ function initGallery() {
         }
     });
 
-    // Обработчик кнопки "Назад"
     document.querySelector('.back-to-centers').addEventListener('click', () => {
         document.getElementById('sealsContainer').style.display = 'none';
         document.getElementById('centersCard').style.display = 'block';
@@ -627,12 +603,10 @@ function initSealGalleries() {
     document.querySelectorAll('.seal-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target && e.target.closest('.like-btn')) {
-                return; // клик по лайку не открывает галерею
             }
             const sealId = card.dataset.seal;
             const center = card.dataset.center || window.currentCenter;
             const seal = centersData[center]?.find(s => s.id === sealId);
-            // Запоминаем текущего тюленя для возврата на ту же карточку
             window.currentSealId = sealId;
             window.currentSealKey = `${center}:${sealId}`;
             
@@ -709,7 +683,6 @@ function initLikeButtons() {
             const sealId = btn.dataset.seal;
             const nowLiked = toggleLike(center, sealId);
             btn.classList.toggle('liked', nowLiked);
-            // Если мы находимся в центре понравившихся — перерисуем список
             if (window.currentCenter === 'liked') {
                 showSeals('liked');
             }
@@ -717,26 +690,62 @@ function initLikeButtons() {
     });
 }
 
-// Инициализация кнопки "Поделиться"
 function initShareButton() {
     const shareBtn = document.getElementById('share-daily-seal');
-    if (shareBtn) {
-        shareBtn.addEventListener('click', () => {
-            const dailySeal = getDailySeal();
-            const text = `Мой тюлень дня: ${dailySeal.name}!\n${dailySeal.description}\n\nПосмотрите, какой тюлень вам сегодня подходит: ${window.location.href}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Мой тюлень дня',
-                    text: text,
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                // Для браузеров без поддержки Web Share API
-                prompt('Скопируйте ссылку и поделитесь с друзьями:', text);
+    if (!shareBtn) return;
+
+    shareBtn.addEventListener('click', async () => {
+        const card = document.querySelector('.seal-card.active');
+        if (!card) {
+            alert("Карточка тюленя дня не найдена!");
+            return;
+        }
+
+        const buttons = card.querySelectorAll('button, .like-btn');
+        buttons.forEach(btn => btn.style.display = 'none');
+
+        try {
+            const canvas = await html2canvas(card, {
+                backgroundColor: null,
+                useCORS: true
+            });
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) {
+                alert("Ошибка: не удалось создать изображение (blob пустой).");
+                return;
             }
-        });
-    }
+
+            const file = new File([blob], 'seal.png', { type: 'image/png' });
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: 'Мой тюлень дня 🦭',
+                    text: 'Посмотри, какой у меня сегодня тюлень!',
+                    files: [file]
+                });
+            } else {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = url;
+                link.download = 'seal.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                alert('На мобильных устройствах будет меню "Поделиться". На ПК картинка скачана как seal.png.');
+            }
+        } catch (err) {
+            console.error('Ошибка при создании скриншота:', err);
+            alert('Не удалось создать скриншот 😢');
+        } finally {
+            // Возвращаем кнопки обратно
+            buttons.forEach(btn => btn.style.display = '');
+        }
+    });
 }
 
 function initBackButton() {
