@@ -817,7 +817,8 @@ function initShareButton() {
 
             const bgColor = getEffectiveOpaqueBg(card);
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const scale = isIOS ? 1 : Math.min(2, (window.devicePixelRatio || 1));
+            const dpr = Math.max(1, (window.devicePixelRatio || 1));
+            const candidateScales = isIOS ? [Math.min(3, dpr), 2, 1] : [Math.min(3, dpr * 2), 3, 2];
 
             // Временная подготовка исходной карточки
             card.classList.add('screenshot-mode');
@@ -843,35 +844,51 @@ function initShareButton() {
                 ancestor = ancestor.parentElement;
             }
 
-            const canvas = await html2canvas(card, {
-                backgroundColor: bgColor,
-                useCORS: true,
-                allowTaint: true,
-                scale,
-                foreignObjectRendering: false,
-                imageTimeout: 0,
-                removeContainer: true,
-                onclone: (doc) => {
-                    const clonedCard = doc.querySelector('.seal-card.active');
-                    if (clonedCard) {
-                        clonedCard.classList.add('screenshot-mode');
-                        clonedCard.style.backgroundColor = bgColor;
-                    }
-                    const style = doc.createElement('style');
-                    style.textContent = `
-                        .screenshot-mode, .screenshot-mode * {
-                            opacity: 1 !important;
-                            filter: none !important;
-                            mix-blend-mode: normal !important;
-                            transition: none !important;
-                            animation: none !important;
-                            backdrop-filter: none !important;
+            async function renderWithScale(scale) {
+                return await html2canvas(card, {
+                    backgroundColor: bgColor,
+                    useCORS: true,
+                    allowTaint: true,
+                    scale,
+                    foreignObjectRendering: false,
+                    imageTimeout: 0,
+                    removeContainer: true,
+                    onclone: (doc) => {
+                        const clonedCard = doc.querySelector('.seal-card.active');
+                        if (clonedCard) {
+                            clonedCard.classList.add('screenshot-mode');
+                            clonedCard.style.backgroundColor = bgColor;
                         }
-                        .screenshot-mode .seal-avatar::after { display: none !important; }
-                    `;
-                    doc.head.appendChild(style);
+                        const style = doc.createElement('style');
+                        style.textContent = `
+                            .screenshot-mode, .screenshot-mode * {
+                                opacity: 1 !important;
+                                filter: none !important;
+                                mix-blend-mode: normal !important;
+                                transition: none !important;
+                                animation: none !important;
+                                backdrop-filter: none !important;
+                                image-rendering: -webkit-optimize-contrast;
+                                image-rendering: crisp-edges;
+                            }
+                            .screenshot-mode .seal-avatar::after { display: none !important; }
+                        `;
+                        doc.head.appendChild(style);
+                    }
+                });
+            }
+
+            let canvas;
+            let lastErr;
+            for (const sc of candidateScales) {
+                try {
+                    canvas = await renderWithScale(sc);
+                    if (canvas) break;
+                } catch (e) {
+                    lastErr = e;
                 }
-            });
+            }
+            if (!canvas) throw lastErr || new Error('Не удалось отрендерить карточку');
 
             // Восстанавливаем состояние карточки
             card.style.backgroundColor = prevBg;
