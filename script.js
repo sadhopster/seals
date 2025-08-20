@@ -294,6 +294,8 @@ function showSeals(center) {
         initSealGalleries();
         initShareButton();
         initBackButton();
+    } else if (center === 'guess') {
+        initGuessGame();
     } else {
         initCarousel();
     }
@@ -402,6 +404,23 @@ function createSealsHTML(center) {
         `;
     }
     
+    if (center === 'guess') {
+        return `
+            <div class="seals-carousel">
+                <h2 class="title">Угадай тюленя</h2>
+                <div class="guess-game">
+                    <div class="guess-photo" id="guessPhoto"></div>
+                    <div class="guess-options" id="guessOptions"></div>
+                    <div class="guess-result" id="guessResult"></div>
+                    <div class="guess-controls">
+                        <button class="back-btn back-to-centers">← Назад к центрам</button>
+                        <button class="back-btn" id="guessNext" disabled>Следующий</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
     return `
         <div class="seals-carousel">
             <h2 class="title">${center === 'liked' 
@@ -452,6 +471,136 @@ function createSealsHTML(center) {
             <button class="back-btn back-to-centers">← Назад к центрам</button>
         </div>
     `;
+}
+
+function getAllSealsList() {
+    const centers = ['tokkari', 'kamogawa', 'kaiyukan'];
+    const all = [];
+    centers.forEach(center => {
+        (centersData[center] || []).forEach(seal => {
+            all.push({ 
+                id: seal.id, 
+                name: seal.name, 
+                photo: seal.photo, 
+                center,
+                photos: Array.isArray(seal.photos) ? seal.photos.slice() : []
+            });
+        });
+    });
+    return all;
+}
+
+let guessState = {
+    allSeals: [],
+    correct: null,
+    options: [],
+    answered: false,
+    correctImage: null
+};
+
+function initGuessGame() {
+    guessState.allSeals = getAllSealsList();
+    setupGuessListeners();
+    startGuessRound();
+}
+
+function setupGuessListeners() {
+    document.getElementById('guessNext')?.addEventListener('click', () => {
+        startGuessRound();
+    });
+    document.querySelector('.back-to-centers')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('sealsContainer').style.display = 'none';
+        document.getElementById('centersCard').style.display = 'block';
+    });
+}
+
+function startGuessRound() {
+    if (!guessState.allSeals || guessState.allSeals.length < 3) return;
+    guessState.answered = false;
+    const correctIndex = Math.floor(Math.random() * guessState.allSeals.length);
+    const correct = guessState.allSeals[correctIndex];
+
+    const others = guessState.allSeals.filter((_, i) => i !== correctIndex);
+    shuffleArray(others);
+    const distractors = others.slice(0, 2);
+    const options = shuffleArray([correct, ...distractors]);
+
+    guessState.correct = correct;
+    guessState.options = options;
+    // Выбираем случайное изображение: аватар или одна из фотографий из галереи
+    const originalSeal = (centersData[correct.center] || []).find(s => s.id === correct.id) || {};
+    const candidates = [originalSeal.photo, ...(Array.isArray(originalSeal.photos) ? originalSeal.photos : [])].filter(Boolean);
+    const pickIdx = Math.floor(Math.random() * candidates.length);
+    guessState.correctImage = candidates[pickIdx] || correct.photo;
+
+    renderGuessRound();
+}
+
+function renderGuessRound() {
+    const photoEl = document.getElementById('guessPhoto');
+    const optionsEl = document.getElementById('guessOptions');
+    const resultEl = document.getElementById('guessResult');
+    const nextBtn = document.getElementById('guessNext');
+    if (!photoEl || !optionsEl) return;
+
+    // Случайный фрагмент: увеличиваем изображение и сдвигаем позицию
+    const zoom = 220; // проценты
+    const posX = Math.floor(Math.random() * 80) + 10; // 10%..90%
+    const posY = Math.floor(Math.random() * 80) + 10;
+    photoEl.style.backgroundImage = `url('${guessState.correctImage}')`;
+    photoEl.style.backgroundSize = `${zoom}%`;
+    photoEl.style.backgroundPosition = `${posX}% ${posY}%`;
+
+    optionsEl.innerHTML = '';
+    guessState.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'guess-option';
+        btn.textContent = opt.name;
+        btn.addEventListener('click', () => handleGuess(opt, btn));
+        optionsEl.appendChild(btn);
+    });
+
+    resultEl.textContent = '';
+    nextBtn.disabled = true;
+}
+
+function handleGuess(selected, btnEl) {
+    if (guessState.answered) return;
+    guessState.answered = true;
+    const resultEl = document.getElementById('guessResult');
+    const nextBtn = document.getElementById('guessNext');
+    const optionsButtons = document.querySelectorAll('.guess-option');
+
+    optionsButtons.forEach(b => b.disabled = true);
+
+    if (selected.id === guessState.correct.id) {
+        btnEl.classList.add('correct');
+        resultEl.textContent = 'Верно!';
+    } else {
+        btnEl.classList.add('incorrect');
+        const correctBtn = Array.from(optionsButtons).find(b => b.textContent === guessState.correct.name);
+        if (correctBtn) correctBtn.classList.add('correct');
+        resultEl.textContent = `Неверно. Это был(а) ${guessState.correct.name}.`;
+    }
+
+    // Показать полное фото после ответа
+    const photoEl = document.getElementById('guessPhoto');
+    photoEl.style.backgroundSize = 'cover';
+    photoEl.style.backgroundPosition = 'center';
+
+    nextBtn.disabled = false;
+}
+
+function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+    return a;
 }
 
 function initCarousel() {
