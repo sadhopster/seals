@@ -784,12 +784,54 @@ function initShareButton() {
         buttons.forEach(btn => btn.style.display = 'none');
 
         try {
+            function getEffectiveOpaqueBg(element) {
+                function compositeOverWhite(r, g, b, a) {
+                    const rr = Math.round(r * a + 255 * (1 - a));
+                    const gg = Math.round(g * a + 255 * (1 - a));
+                    const bb = Math.round(b * a + 255 * (1 - a));
+                    return `rgb(${rr}, ${gg}, ${bb})`;
+                }
+
+                let current = element;
+                while (current) {
+                    const bg = window.getComputedStyle(current).backgroundColor;
+                    if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
+                        const m = bg.match(/rgba?\(([^)]+)\)/);
+                        if (m) {
+                            const parts = m[1].split(',').map(s => s.trim());
+                            const r = parseInt(parts[0], 10);
+                            const g = parseInt(parts[1], 10);
+                            const b = parseInt(parts[2], 10);
+                            const a = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
+                            if (isNaN(a) || a >= 1) {
+                                return `rgb(${r}, ${g}, ${b})`;
+                            }
+                            return compositeOverWhite(r, g, b, a);
+                        }
+                        return bg;
+                    }
+                    current = current.parentElement;
+                }
+                return '#ffffff';
+            }
+
+            const bgColor = getEffectiveOpaqueBg(card);
+            const scale = Math.min(2, (window.devicePixelRatio || 1));
             const canvas = await html2canvas(card, {
-                backgroundColor: null,
-                useCORS: true
+                backgroundColor: bgColor,
+                useCORS: true,
+                scale
             });
 
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const opaqueCanvas = document.createElement('canvas');
+            opaqueCanvas.width = canvas.width;
+            opaqueCanvas.height = canvas.height;
+            const ctx = opaqueCanvas.getContext('2d');
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, opaqueCanvas.width, opaqueCanvas.height);
+            ctx.drawImage(canvas, 0, 0);
+
+            const blob = await new Promise(resolve => opaqueCanvas.toBlob(resolve, 'image/png'));
             if (!blob) {
                 alert("Ошибка: не удалось создать изображение (blob пустой).");
                 return;
