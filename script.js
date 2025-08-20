@@ -86,7 +86,7 @@ const centersData = {
             species: 'Кольчатая нерпа', 
             age: '21 год', 
             weight: 'Нет данных', 
-            features: 'Злюка, старушка', 
+            features: 'Злюка, старушка, великая госпожа', 
             description: 'Ару всем всегда недовольна. Разбудили? Ару злится. Покормили? Ару злится. Рядом другой тюлень проплыл? Ару злится. Ару - злюка.', 
             photo: 'aru.png',
             photos: [
@@ -94,8 +94,75 @@ const centersData = {
                 'aru2.jpg',
                 'aru3.jpg'
             ]
+        },
+       {
+         id: 'Tino', 
+            name: 'Тино', 
+            species: 'Кольчатая нерпа', 
+            age: '22 года', 
+            weight: 'Нет данных', 
+            features: 'Любит брызгаться, иногда злится', 
+            description: 'Ару его жена, этим все сказано.', 
+            photo: 'tino.png',
+            photos: [
+                'tino1.jpg',
+                'tino2.jpg',
+                'tino3.jpg',
+                'tino4.jpg'
+            ]
         }
     ],
+    kaiyukan: [
+        { 
+            id: 'uki', 
+            name: 'Юки', 
+            species: 'Кольчатая нерпа', 
+            age: '17 лет', 
+            weight: '50-60 кг', 
+            features: 'Толстенькая и мягенькая', 
+            description: 'По некоторым видео от киперов Кайюкана, можно понять настолько она мягкая', 
+            photo: 'uki.png',
+            photos: [
+                'uki1.jpg',
+                'uki2.jpg',
+                'uki3.jpg',
+                'uki4.jpg'
+            ]
+        },
+        { 
+            id: 'Moya', 
+            name: 'Мойя', 
+            species: 'Кольчатая нерпа', 
+            age: '16 лет', 
+            weight: '50-60 кг', 
+            features: 'Чем-то напоминает Кацунори', 
+            description: 'От Мойи веет тайнами, пока не понимаю как к нему относиться', 
+            photo: 'moya.png',
+            photos: [
+                'moya1.jpg',
+                'moya2.jpg',
+                'moya3.jpg',
+                'moya4.jpg'
+            ]
+        },
+        { 
+            id: 'Arare', 
+            name: 'Араре', 
+            species: 'Кольчатая нерпа', 
+            age: '20 лет', 
+            weight: '50-60 кг', 
+            features: 'Идеал среди нерп', 
+            description: 'Кто-то говорит что она выглядит слишком идеальной, другие называют её царицей', 
+            photo: 'arare.png',
+            photos: [
+                'arare1.jpg',
+                'arare2.jpg',
+                'arare3.jpg',
+                'arare4.jpg'
+            ]
+        }
+    ],
+
     sasha: [
         { photo: 'sasha1.png', description: 'Рисунок Йо-чан на судоку' },
         { photo: 'sasha2.jpg', description: 'Рисунок Цуки и Йо' },
@@ -174,7 +241,8 @@ function getDailySeal() {
     
     const allSeals = [
         ...centersData.tokkari,
-        ...centersData.kamogawa
+        ...centersData.kamogawa,
+        ...centersData.kaiyukan
     ];
     
     const randomIndex = Math.floor(Math.random() * allSeals.length);
@@ -290,7 +358,11 @@ function createSealsHTML(center) {
             `;
         }
         
-        const sealCenter = centersData.tokkari.includes(dailySeal) ? 'tokkari' : 'kamogawa';
+        const sealCenter = centersData.tokkari.includes(dailySeal)
+            ? 'tokkari'
+            : centersData.kamogawa.includes(dailySeal)
+                ? 'kamogawa'
+                : 'kaiyukan';
         
         return `
             <div class="seals-carousel">
@@ -332,7 +404,14 @@ function createSealsHTML(center) {
     
     return `
         <div class="seals-carousel">
-            <h2 class="title">${center === 'liked' ? 'Понравившиеся тюлени' : `Тюлени ${center === 'tokkari' ? 'Tokkari' : 'Kamogawa'} Center`}</h2>
+            <h2 class="title">${center === 'liked' 
+                ? 'Понравившиеся тюлени' 
+                : `Тюлени ${center === 'tokkari' 
+                    ? 'Tokkari' 
+                    : center === 'kamogawa' 
+                        ? 'Kamogawa' 
+                        : 'Osaka Aquarium Kaiyukan'} Center`}
+            </h2>
             <div class="carousel-container">
                 <div class="carousel-track">
                     ${seals.map((seal, index) => {
