@@ -818,7 +818,7 @@ function initShareButton() {
             const bgColor = getEffectiveOpaqueBg(card);
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const dpr = Math.max(1, (window.devicePixelRatio || 1));
-            const candidateScales = isIOS ? [Math.min(3, dpr), 2, 1] : [Math.min(3, dpr * 2), 3, 2];
+            const candidateScales = isIOS ? [3, 2.5, Math.min(2, dpr)] : [Math.min(3, dpr * 2), 3, 2];
 
             // Временная подготовка исходной карточки
             card.classList.add('screenshot-mode');
@@ -870,6 +870,8 @@ function initShareButton() {
                                 backdrop-filter: none !important;
                                 image-rendering: -webkit-optimize-contrast;
                                 image-rendering: crisp-edges;
+                                -webkit-font-smoothing: antialiased;
+                                text-rendering: optimizeLegibility;
                             }
                             .screenshot-mode .seal-avatar::after { display: none !important; }
                         `;
