@@ -816,11 +816,70 @@ function initShareButton() {
             }
 
             const bgColor = getEffectiveOpaqueBg(card);
-            const scale = Math.min(2, (window.devicePixelRatio || 1));
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const scale = isIOS ? 1 : Math.min(2, (window.devicePixelRatio || 1));
+
+            // Временная подготовка исходной карточки
+            card.classList.add('screenshot-mode');
+            const prevBg = card.style.backgroundColor;
+            card.style.backgroundColor = bgColor;
+
+            // Временно отключаем transform/filter у предков, чтобы избежать пустого рендера
+            const ancestorsWithTransforms = [];
+            let ancestor = card.parentElement;
+            while (ancestor && ancestor !== document.body) {
+                const cs = window.getComputedStyle(ancestor);
+                if (cs.transform !== 'none' || cs.filter !== 'none' || cs.backdropFilter !== 'none') {
+                    ancestorsWithTransforms.push({
+                        el: ancestor,
+                        transform: ancestor.style.transform,
+                        filter: ancestor.style.filter,
+                        backdropFilter: ancestor.style.backdropFilter
+                    });
+                    ancestor.style.transform = 'none';
+                    ancestor.style.filter = 'none';
+                    ancestor.style.backdropFilter = 'none';
+                }
+                ancestor = ancestor.parentElement;
+            }
+
             const canvas = await html2canvas(card, {
                 backgroundColor: bgColor,
                 useCORS: true,
-                scale
+                allowTaint: true,
+                scale,
+                foreignObjectRendering: false,
+                imageTimeout: 0,
+                removeContainer: true,
+                onclone: (doc) => {
+                    const clonedCard = doc.querySelector('.seal-card.active');
+                    if (clonedCard) {
+                        clonedCard.classList.add('screenshot-mode');
+                        clonedCard.style.backgroundColor = bgColor;
+                    }
+                    const style = doc.createElement('style');
+                    style.textContent = `
+                        .screenshot-mode, .screenshot-mode * {
+                            opacity: 1 !important;
+                            filter: none !important;
+                            mix-blend-mode: normal !important;
+                            transition: none !important;
+                            animation: none !important;
+                            backdrop-filter: none !important;
+                        }
+                        .screenshot-mode .seal-avatar::after { display: none !important; }
+                    `;
+                    doc.head.appendChild(style);
+                }
+            });
+
+            // Восстанавливаем состояние карточки
+            card.style.backgroundColor = prevBg;
+            card.classList.remove('screenshot-mode');
+            ancestorsWithTransforms.forEach(({ el, transform, filter, backdropFilter }) => {
+                el.style.transform = transform;
+                el.style.filter = filter;
+                el.style.backdropFilter = backdropFilter;
             });
 
             const opaqueCanvas = document.createElement('canvas');
